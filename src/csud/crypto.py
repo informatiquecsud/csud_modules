@@ -204,11 +204,32 @@ def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
 
 def load_text(filename: str) -> str:
     '''
-    >>> load_text('sample.txt')
-    'Ceci est un texte d\'exemple pour tester la fonction load_text.'
+    Retourne le contenu textuel du fichier `filename`
+
+    Exemple: data = load_text('fichier.txt')
     '''
     with open(filename, 'r', encoding='utf-8') as file:
         return file.read()
+
+
+def friedman_characteristic(text: str, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') -> float:
+    '''
+    Calcule la caractéristique de Friedman pour le texte donné, arrondie à 5 chiffres.
+
+    >>> friedman_characteristic("HELLO")
+    0.24154
+    >>> friedman_characteristic("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    0.0
+    '''
+    # Calcul des fréquences des lettres dans le texte
+    freqs: list[tuple[str, float]] = letter_frequencies(text, alphabet)
+    # Calcul de la caractéristique de Friedman en utilisant la formule
+    cf = 0.0
+    for i in range(len(alphabet)):
+        f_x = freqs[i][1]  # Fréquence de la lettre i
+        f_x /= 100  # Convertir en probabilité entre 0 et 1
+        cf += (f_x - 1/len(alphabet)) ** 2
+    return round(cf, 5)
 
 
 if __name__ == "__main__":
