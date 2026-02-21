@@ -202,6 +202,14 @@ def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     return result.upper()
 
 
+def load_text(filename: str) -> str:
+    '''
+    >>> load_text('sample.txt')
+    'Ceci est un texte d\'exemple pour tester la fonction load_text.'
+    '''
+    with open(filename, 'r', encoding='utf-8') as file:
+        return file.read()
+
 
 if __name__ == "__main__":
     import doctest
