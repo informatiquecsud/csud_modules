@@ -6,6 +6,7 @@ Modules Python used at Collège du Sud for teaching CS
 
 ```python
 import micropip
-await micropip.install("csud_modules")
-```
+await micropip.install("https://raw.githubusercontent.com/informatiquecsud/csud_modules/refs/heads/main/dist/csud-0.1.0-py3-none-any.whl")
 
+from csud.crypto import *
+```
