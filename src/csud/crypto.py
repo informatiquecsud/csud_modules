@@ -151,7 +151,7 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
 
     plt.xlabel('Lettres')
     plt.ylabel('Fréquence d\'apparition (%)')
-    plt.title(f'Fréquence d\'apparition des lettres dans {title}')
+    plt.title(f'Fréquences d\'apparition des lettres dans {title}')
     plt.ylim(0, max(values) + 5)
     plt.show()
 
