@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from random import shuffle
 
+
 def permutate_abc(alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     # Convertir l'alphabet en une liste de caractères
     chars = list(alphabet)
@@ -9,6 +10,7 @@ def permutate_abc(alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     # Reconstituer une chaîne à partir de la liste mélangée
     permutation = "".join(chars)
     return permutation
+
 
 def rotate(shift):
     '''
@@ -59,6 +61,7 @@ def substitution(text: str, key: str, decrypt: bool = False, alphabet: str = 'AB
 
     # Après avoir traité tous les caractères, on retourne le texte chiffré
     return result
+
 
 def vigenere(text, key, decrypt=False, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     '''
@@ -158,7 +161,7 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
         frequencies.sort(key=order_by_letter)
 
     letters = [item[0] for item in frequencies[start:start+nbars]]
-    values =  [item[1] for item in frequencies[start:start+nbars]]
+    values = [item[1] for item in frequencies[start:start+nbars]]
 
     # Créer une figure avec une meilleure résolution
     plt.figure(figsize=(8, 6), dpi=100)
@@ -167,7 +170,8 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
 
     # Ajouter les valeurs sur les barres
     for i, (letter, value) in enumerate(zip(letters, values)):
-        plt.text(i, value + 0.5, f'{value:.1f}', ha='left', va='bottom', fontsize=8, rotation=45)
+        plt.text(i, value + 0.5, f'{value:.1f}',
+                 ha='left', va='bottom', fontsize=8, rotation=45)
 
     plt.xlabel('Lettres')
     plt.ylabel('Fréquence d\'apparition (%)')
@@ -175,14 +179,16 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
     plt.ylim(0, max(values) + 5)
     plt.show()
 
+
 french_frequencies = [
-    ('A' , 8.15), ('B' , 0.97), ('C' , 3.15), ('D' , 3.73), ('E' , 17.39),
-    ('F' , 1.12), ('G' , 0.97), ('H' , 0.85), ('I' , 7.31), ('J' , 0.45),
-    ('K' , 0.02), ('L' , 5.69), ('M' , 2.87), ('N' , 7.12), ('O' , 5.28),
-    ('P' , 2.80), ('Q' , 1.21), ('R' , 6.64), ('S' , 8.14), ('T' , 7.22),
-    ('U' , 6.38), ('V' , 1.64), ('W' , 0.03), ('X' , 0.41), ('Y' , 0.28),
-    ('Z' , 0.15),
+    ('A', 8.15), ('B', 0.97), ('C', 3.15), ('D', 3.73), ('E', 17.39),
+    ('F', 1.12), ('G', 0.97), ('H', 0.85), ('I', 7.31), ('J', 0.45),
+    ('K', 0.02), ('L', 5.69), ('M', 2.87), ('N', 7.12), ('O', 5.28),
+    ('P', 2.80), ('Q', 1.21), ('R', 6.64), ('S', 8.14), ('T', 7.22),
+    ('U', 6.38), ('V', 1.64), ('W', 0.03), ('X', 0.41), ('Y', 0.28),
+    ('Z', 0.15),
 ]
+
 
 def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     '''
@@ -250,6 +256,29 @@ def friedman_characteristic(text: str, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWX
         f_x /= 100  # Convertir en probabilité entre 0 et 1
         cf += (f_x - 1/len(alphabet)) ** 2
     return round(cf, 5)
+
+
+def index_of_coincidence(text: str, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') -> float:
+    '''
+    Calcule l'indice de coincidence pour le texte donné, arrondi à 5 chiffres.
+
+    >>> index_of_coincidence("HELLO")
+    0.1
+    >>> index_of_coincidence("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    0.0
+    '''
+    freqs: list[tuple[str, float]] = letter_frequencies(text, alphabet)
+    N: int = len(text)  # Nombre total de lettres
+    if N <= 1:
+        return 0.0  # Éviter la division par zéro
+
+    somme: float = 0.0
+    for i in range(len(alphabet)):
+        f_x: float = freqs[i][1]  # Fréquence de la lettre i
+        f_x /= 100  # Convertir en probabilité entre 0 et 1
+        n_x: int = int(round(f_x * N))  # Convertir en nombre d'occurrences
+        somme += n_x * (n_x - 1)  # Calcul de la contribution de chaque lettre
+    return round(somme / (N * (N - 1)), 5)
 
 
 if __name__ == "__main__":
