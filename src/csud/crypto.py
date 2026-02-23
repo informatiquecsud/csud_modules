@@ -89,6 +89,26 @@ def vigenere(text, key, decrypt=False, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
 
     return ''.join(ciphertext)
 
+
+def extract_subtexts(ciphertext, key_length):
+    '''
+    Extrait les sous-textes d'un texte chiffré avec le chiffre de Vigenère.
+
+    >>> extract_subtexts("ABCDEFGHIJ", 3)
+    ['ADGJ', 'BEH', 'CFI']
+    >>> extract_subtexts("LXFOPVEFRNHR", 5)
+    ['LVH', 'XER', 'FF', 'OR', 'PN']
+    '''
+    subtexts = [''] * key_length
+
+    for i in range(len(ciphertext)):
+        char = ciphertext[i]
+        subtext_index = i % key_length
+        subtexts[subtext_index] += char
+
+    return subtexts
+
+
 def letter_frequencies(message: str, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') -> list[tuple[str, float]]:
     '''
     Retourne une liste contenant le nombre d'apparitions de chaque
