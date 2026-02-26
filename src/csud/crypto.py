@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from random import shuffle
 
-
 def permutate_abc(alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     # Convertir l'alphabet en une liste de caractères
     chars = list(alphabet)
@@ -10,7 +9,6 @@ def permutate_abc(alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     # Reconstituer une chaîne à partir de la liste mélangée
     permutation = "".join(chars)
     return permutation
-
 
 def rotate(shift):
     '''
@@ -63,6 +61,21 @@ def substitution(text: str, key: str, decrypt: bool = False, alphabet: str = 'AB
     return result
 
 
+def caesar(text: str, shift: int, decrypt: bool = False, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') -> str:
+    '''
+    >>> caesar("HELLO", 3)
+    'KHOOR'
+    >>> caesar("hello", 3)
+    'KHOOR'
+    >>> caesar("KHOOR", 3, decrypt=True)
+    'HELLO'
+    '''
+    if decrypt:
+        shift = -shift
+    shifted_alphabet = rotate(shift)
+    return substitution(text, shifted_alphabet, alphabet=alphabet)
+
+
 def vigenere(text, key, decrypt=False, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     '''
     Chiffre le texte en clair avec le chiffre de Vigenère utilisant la clé donnée.
@@ -91,6 +104,60 @@ def vigenere(text, key, decrypt=False, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
             ciphertext.append(encrypted_char)
 
     return ''.join(ciphertext)
+
+
+def generate_digrams(alphabet: str) -> list[str]:
+    '''
+    Génère la liste de tous les bigrammes possibles à partir d'un
+    alphabet donné.
+
+    >>> generate_digrams("ABC")
+    ['AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC']
+    '''
+
+    digrams = []
+    for a in alphabet:
+        for b in alphabet:
+            digrams.append(a + b)
+    return digrams
+
+    
+def digram_frequencies(message: str, alphabet: str) -> list[tuple[str, float]]:
+    '''
+    Retourne une liste contenant le nombre d'apparitions de chaque
+    digramme dans le message
+
+    >>> digram_frequencies("ABABBA", "ABC")
+    [('AA', 0.0), ('AB', 40.0), ('AC', 0.0), ('BA', 40.0), ('BB', 20.0), ('BC', 0.0), ('CA', 0.0), ('CB', 0.0), ('CC', 0.0)]
+    '''
+
+    # Déterminer les bigrammes possibles sur la base de l'alphabet
+    digrams = []
+    for a in alphabet:
+        for b in alphabet:
+            digrams.append(a + b)
+
+    # compter le nombre d'apparitions de chaque digramme dans le texte
+    counters = [0] * len(digrams)
+    # Comptage des bigrammes
+    for i in range(len(message) - 1):
+        letter1 = message[i]
+        letter2 = message[i + 1]
+        pair = letter1 + letter2
+        if pair in digrams:
+            index = digrams.index(pair)
+            counters[index] += 1
+
+    # Calcul des fréquences d'apparition en pourcentage
+    frequencies = []
+    total_digrams = len(message) - 1
+    for i in range(len(digrams)):
+        count = counters[i]
+        digram = digrams[i]
+        frequency = round(count / total_digrams * 100, 2) if total_digrams > 0 else 0.0
+        frequencies.append((digram, frequency))
+
+    return frequencies
 
 
 def extract_subtexts(ciphertext, key_length):
@@ -140,9 +207,18 @@ def letter_frequencies(message: str, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ
     return frequencies
 
 
-def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by: str = 'frequency', start: int = 0, nbars: int = None) -> None:
+def plot_frequencies(frequencies: list[tuple[str, float]], title: str = '', order_by: str = 'frequency', start: int = 0, nbars: int | None = None) -> None:
     '''
     Affiche un graphique des fréquences d'apparition des lettres
+
+    Paramètres:
+
+    - `title` : permet de déterminer le titre du graphique
+    - `order_by` : 
+        valeur 'frequency' => triés par fréquence décroissante (par défaut)
+        sinon : trier par ordre alphabétique des lettres
+    - `start` : indiquer à partir de quelle barre afficher (utile si beaucoup de barres, pour digrammes)
+    - `nbars` : nombre de barres à afficher (utile si beaucoup de barres, pour digrammes)
     '''
     def order_by_frequency(x):
         ''' ordre décroissant des fréquences '''
@@ -161,7 +237,7 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
         frequencies.sort(key=order_by_letter)
 
     letters = [item[0] for item in frequencies[start:start+nbars]]
-    values = [item[1] for item in frequencies[start:start+nbars]]
+    values =  [item[1] for item in frequencies[start:start+nbars]]
 
     # Créer une figure avec une meilleure résolution
     plt.figure(figsize=(8, 6), dpi=100)
@@ -170,8 +246,7 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
 
     # Ajouter les valeurs sur les barres
     for i, (letter, value) in enumerate(zip(letters, values)):
-        plt.text(i, value + 0.5, f'{value:.1f}',
-                 ha='left', va='bottom', fontsize=8, rotation=45)
+        plt.text(i, value + 0.5, f'{value:.1f}', ha='left', va='bottom', fontsize=8, rotation=45)
 
     plt.xlabel('Lettres')
     plt.ylabel('Fréquence d\'apparition (%)')
@@ -179,16 +254,14 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str, order_by:
     plt.ylim(0, max(values) + 5)
     plt.show()
 
-
 french_frequencies = [
-    ('A', 8.15), ('B', 0.97), ('C', 3.15), ('D', 3.73), ('E', 17.39),
-    ('F', 1.12), ('G', 0.97), ('H', 0.85), ('I', 7.31), ('J', 0.45),
-    ('K', 0.02), ('L', 5.69), ('M', 2.87), ('N', 7.12), ('O', 5.28),
-    ('P', 2.80), ('Q', 1.21), ('R', 6.64), ('S', 8.14), ('T', 7.22),
-    ('U', 6.38), ('V', 1.64), ('W', 0.03), ('X', 0.41), ('Y', 0.28),
-    ('Z', 0.15),
+    ('A' , 8.15), ('B' , 0.97), ('C' , 3.15), ('D' , 3.73), ('E' , 17.39),
+    ('F' , 1.12), ('G' , 0.97), ('H' , 0.85), ('I' , 7.31), ('J' , 0.45),
+    ('K' , 0.02), ('L' , 5.69), ('M' , 2.87), ('N' , 7.12), ('O' , 5.28),
+    ('P' , 2.80), ('Q' , 1.21), ('R' , 6.64), ('S' , 8.14), ('T' , 7.22),
+    ('U' , 6.38), ('V' , 1.64), ('W' , 0.03), ('X' , 0.41), ('Y' , 0.28),
+    ('Z' , 0.15),
 ]
-
 
 def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     '''
