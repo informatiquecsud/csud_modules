@@ -85,23 +85,27 @@ def vigenere(text, key, decrypt=False, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     >>> vigenere('HELLOCRYPTO', 'KEY')
     'RIJVSABCNDS'
     >>> vigenere("Hello crypto", "KEY")
-    'RIJVSMVWZXM'
+    Traceback (most recent call last):
+      ...
+    ValueError: text contains char ' ' at position 5 not in alphabet
     >>> vigenere("LXFOPVEFRNHR", "LEMON", decrypt=True)
     'ATTACKATDAWN'
     '''
     ciphertext = []
     key_length = len(key)
     for i, char in enumerate(text):
-        if char.upper() in alphabet:
-            key_index = i % key_length
-            abc_index = alphabet.index(char.upper())
-            key_char = key[key_index].upper()
-            key_shift = alphabet.index(key_char)
-            if decrypt:
-                key_shift = -key_shift
-            shift = (abc_index + key_shift) % len(alphabet)
-            encrypted_char = alphabet[shift]
-            ciphertext.append(encrypted_char)
+        if char.upper() not in alphabet:
+            raise ValueError(f"text contains char '{char}' at position {i} not in alphabet")
+            
+        key_index = i % key_length
+        abc_index = alphabet.index(char.upper())
+        key_char = key[key_index].upper()
+        key_shift = alphabet.index(key_char)
+        if decrypt:
+            key_shift = -key_shift
+        shift = (abc_index + key_shift) % len(alphabet)
+        encrypted_char = alphabet[shift]
+        ciphertext.append(encrypted_char)
 
     return ''.join(ciphertext)
 
@@ -121,7 +125,7 @@ def generate_digrams(alphabet: str) -> list[str]:
             digrams.append(a + b)
     return digrams
 
-    
+
 def digram_frequencies(message: str, alphabet: str) -> list[tuple[str, float]]:
     '''
     Retourne une liste contenant le nombre d'apparitions de chaque
@@ -214,7 +218,7 @@ def plot_frequencies(frequencies: list[tuple[str, float]], title: str = '', orde
     Paramètres:
 
     - `title` : permet de déterminer le titre du graphique
-    - `order_by` : 
+    - `order_by` :
         valeur 'frequency' => triés par fréquence décroissante (par défaut)
         sinon : trier par ordre alphabétique des lettres
     - `start` : indiquer à partir de quelle barre afficher (utile si beaucoup de barres, pour digrammes)
