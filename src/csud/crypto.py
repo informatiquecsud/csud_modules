@@ -291,7 +291,7 @@ def get_frequencies(language: str = 'french') -> list[tuple[str, float]]:
         raise ValueError(f"Unknown language '{language}'. Known languages: {list(KNOWN_FREQUENCIES.keys())}")
 
 
-def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
+def prepare(text: str) -> str:
     '''
 
     Prepares the text to be encrypted by stripping away the
@@ -302,7 +302,7 @@ def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     >>> prepare("Il m'a toujours impressionné![]{}?")
     'ILMATOUJOURSIMPRESSIONNE'
     '''
-
+    alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     result = ''
     # tout mettre en majuscules
     text = text.lower()
