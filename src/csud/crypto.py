@@ -267,6 +267,30 @@ french_frequencies = [
     ('Z' , 0.15),
 ]
 
+def get_frequencies(language: str = 'french') -> list[tuple[str, float]]:
+    '''
+    
+    Retourne les fréquences d'apparition des lettres en fonction de la langue.
+    
+    Langues disponibles : 'french' (par défaut)
+    
+    >>> get_frequencies('french')[0:5]
+    [('A', 8.15), ('B', 0.97), ('C', 3.15), ('D', 3.73), ('E', 17.39)]
+    >>> get_frequencies('french')[0]
+    ('A', 8.15)
+    
+    '''
+    
+    # Ajouter d'autres langues si nécessaire
+    KNOWN_FREQUENCIES = {
+        'french': french_frequencies,
+    }
+    if language in KNOWN_FREQUENCIES:
+        return KNOWN_FREQUENCIES[language]
+    else:
+        raise ValueError(f"Unknown language '{language}'. Known languages: {list(KNOWN_FREQUENCIES.keys())}")
+
+
 def prepare(text, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     '''
 
