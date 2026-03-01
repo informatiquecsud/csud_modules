@@ -183,6 +183,36 @@ def extract_subtexts(ciphertext, key_length):
     return subtexts
 
 
+def apply_substitutions(text: str, **substitutions) -> str:
+    '''
+
+    Faciliter les attaques fréquentielles sur un texte chiffré
+    monoalphabétiquement en appliquant des substitutions partielles
+    indiquées dans les paramètres nommés au texte ``text``.
+
+    La fonction applique toutes les substitutions indiquées dans les
+    paramètres nommés au texte donné en entrée. Par exemple, si on appelle
+    la fonction avec les paramètres ``A='E'`` et ``B='T'``, alors toutes les
+    occurrences de la lettre 'A' dans le texte seront remplacées par 'E', et
+    toutes les occurrences de la lettre 'B' seront remplacées par 'T'.
+
+    Dans la chaîne retournée, les lettres substituées sont mises en
+    minuscules pour les différencier des autres lettres du texte qui n'ont
+    pas été substituées.
+
+    >>> key = 'QOLWNXTMGDKBPRSEUVFZHJIYCA'
+    >>> c = substitution('HELLO', key)
+    >>> c
+    'MNBBS'
+    >>> apply_substitutions("MNBBS", M='H', B='L')
+    'hNllS'
+
+    '''
+    for ciphered, plain in substitutions.items():
+        text = text.replace(ciphered, plain.lower())
+    return text
+
+
 def letter_frequencies(message: str, alphabet: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') -> list[tuple[str, float]]:
     '''
     Retourne une liste contenant le nombre d'apparitions de chaque
